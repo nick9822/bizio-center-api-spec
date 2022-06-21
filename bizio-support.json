@@ -301,6 +301,61 @@
         ]
       }
     },
+    "/tickets/assign-ticket": {
+      "post": {
+        "tags": [
+          "tickets"
+        ],
+        "summary": "Assign a ticket",
+        "operationId": "assignTicket",
+        "requestBody": {
+          "description": "Assignment body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "adminUserId": {
+                    "type": "string",
+                    "example": "xxxxxxx-xxxxxxx-xxxxxxx"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {}
+          }
+        },
+        "security": [
+          {
+            "dair_auth": []
+          }
+        ],
+        "x-codegen-request-body-name": "body"
+      }
+    },
     "/tickets/reply": {
       "post": {
         "tags": [
