@@ -1,0 +1,281 @@
+openapi: 3.0.1
+info:
+  title: Bizio Support
+  description: Uses `bearer-token` for authorization
+  termsOfService: https://dev.thebizio.net/termsandconditions
+  contact:
+    email: nikesh.tawde@digitalairtech.com
+  license:
+    name: Proprietary
+    url: http://digitalairtech.com
+  version: 1.0.0
+servers:
+  - url: https://bizio-support-api-dev.thebizio.net/api/v1
+tags:
+  - name: tickets
+    description: ticket management
+components:
+  schemas:
+    Ticket:
+      type: object
+      properties:
+        ticketId:
+          type: string
+          readOnly: true
+          example: S12XSDSDSS
+        ticketType:
+          type: string
+          enum:
+            - Sales
+            - Billing
+            - Technical
+          example: Sales
+        title:
+          type: string
+          example: Issue with weather widget
+        description:
+          type: string
+          example: Unload to load weather widget
+        status:
+          type: string
+          readOnly: true
+          example: Open
+          enum:
+            - Open
+            - Closed
+        openedBy:
+          type: string
+          readOnly: true
+          example: user@example.com
+        closedBy:
+          type: string
+          readOnly: true
+          example: admin@dair.com
+        deviceType:
+          type: string
+          enum:
+            - Mobile
+            - Desktop
+            - TV
+          example: Mobile
+        os:
+          type: string
+          enum:
+            - Windows PC
+            - Mac
+            - Linux
+            - Android
+            - iOS
+          example: Mac
+        application:
+          type: string
+          enum:
+            - Bizio Meet
+            - Bizio Drive
+            - Bizio C-Suite
+          example: Bizio Meet
+        browser:
+          type: string
+          enum:
+            - Google Chrome
+            - Microsoft Edge
+            - Mozilla Firefox
+            - Safari
+          example: Google Chrome
+    TicketDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: S12XSDSDSS
+          readOnly: true
+        title:
+          type: string
+          example: Issue with weather widget
+        attachments:
+          type: string
+          example: 2
+        conversation:
+          type: string
+          example: 12
+        status:
+          type: string
+          readOnly: true
+          example: Open
+          enum:
+            - Open
+            - Closed
+    TicketMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          example: S12XSDSDSS
+          readOnly: true
+        ticketId:
+          type: string
+          example: S12XSDSDSS
+        message:
+          type: string
+          example: Hi user, how may I help you?
+        owner:
+          type: string
+          readOnly: true
+          example: admin@dair.com
+        attachments:
+            type: array
+            items:
+              type: string
+              format: binary
+    ApiResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          format: int32
+          example: 200
+        message:
+          type: string
+          example: OK
+  securitySchemes:
+    dair_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /tickets:
+    get:
+      tags:
+        - tickets
+      summary: Get user's tickets
+      operationId: getTickets
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                    type: object
+                    properties:
+                      resObj:
+                        $ref: '#/components/schemas/TicketDto'
+        '400':
+          description: Bad Request
+          content: {}
+        '401':
+          description: Unauthorized
+          content: {}
+        '500':
+          description: Server Error
+          content: {}
+      security:
+        - dair_auth: []
+      x-codegen-request-body-name: body
+    post:
+      tags:
+        - tickets
+      summary: post a new ticket
+      operationId: postTicket
+      requestBody:
+        description: New ticket details
+        content:
+          application/json:
+            schema: 
+              type: object
+              $ref: '#/components/schemas/Ticket'
+        required: true
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad Request
+          content: {}
+        '401':
+          description: Unauthorized
+          content: {}
+        '500':
+          description: Server Error
+          content: {}
+      security:
+        - dair_auth: []
+        
+  /tickets/{ticketId}:
+    post:
+      tags:
+        - tickets
+      summary: Post a reply to ticket
+      operationId: postReply
+      parameters:
+        - in: path
+          name: ticketId
+          schema:
+            type: string
+            example: S12XSDSDSS
+          required: true
+          description: ticket id
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad Request
+          content: {}
+        '401':
+          description: Unauthorized
+          content: {}
+        '500':
+          description: Server Error
+          content: {}
+      security:
+        - dair_auth: []
+      x-codegen-request-body-name: body
+  
+  /tickets/change-status:
+    post:
+      tags:
+        - tickets
+      summary: Change the status
+      operationId: changeStatus
+      requestBody:
+        description: ticketId and new status
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                ticketId:
+                  type: string
+                  example: S12XSDSDSS
+                status:
+                  type: string
+                  example: Close
+        required: true
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad Request
+          content: {}
+        '401':
+          description: Unauthorized
+          content: {}
+        '500':
+          description: Server Error
+          content: {}
+      security:
+        - dair_auth: []
+      x-codegen-request-body-name: body
