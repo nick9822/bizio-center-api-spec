@@ -108,6 +108,13 @@
               "Safari"
             ],
             "example": "Google Chrome"
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
           }
         }
       },
@@ -254,7 +261,7 @@
         "requestBody": {
           "description": "New ticket details",
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "$ref": "#/components/schemas/Ticket"
@@ -294,25 +301,40 @@
         ]
       }
     },
-    "/tickets/{ticketId}": {
+    "/tickets/reply": {
       "post": {
         "tags": [
           "tickets"
         ],
         "summary": "Post a reply to ticket",
         "operationId": "postReply",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "ticketId",
-            "schema": {
-              "type": "string",
-              "example": "S12XSDSDSS"
-            },
-            "required": true,
-            "description": "ticket id"
+        "requestBody": {
+          "description": "Reply body",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ticketId": {
+                    "type": "string",
+                    "example": "S12XSDSDSS"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Hi, how may I help you?"
+                  },
+                  "attachments": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "successful",
@@ -380,6 +402,70 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {}
+          }
+        },
+        "security": [
+          {
+            "dair_auth": []
+          }
+        ],
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/tickets/thread/{ticketId}": {
+      "get": {
+        "tags": [
+          "tickets"
+        ],
+        "summary": "Get ticket thread i.e. list of messages under ticket",
+        "operationId": "getThreads",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ticketId",
+            "schema": {
+              "type": "string",
+              "example": "S12XSDSDSS"
+            },
+            "required": true,
+            "description": "ticket id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponse",
+                      "type": "object",
+                      "properties": {
+                        "resObj": {
+                          "type": "array",
+                          "items": null,
+                          "$ref": "#/components/schemas/TicketMessage"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
